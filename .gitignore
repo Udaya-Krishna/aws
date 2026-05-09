@@ -2,6 +2,7 @@
 .env
 *.env
 .aws/
+.venv/
 
 # Data files (upload to S3 instead)
 data/*.csv
