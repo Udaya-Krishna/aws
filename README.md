@@ -5,7 +5,7 @@ a customer churn prediction model on AWS — with drift monitoring and automated
 
 ## Architecture
 
-![Architecture](docs/architecture.png)
+![Architecture](docs/mlops_churn_architecture.svg)
 
 ## Services Used
 
