@@ -1,0 +1,16 @@
+# AWS
+.env
+*.env
+.aws/
+
+# Data files (upload to S3 instead)
+data/*.csv
+data/*.json
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
