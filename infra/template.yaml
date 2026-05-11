@@ -1,7 +1,8 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: SageMaker execution role for MLOps churn pipeline
+Description: MLOps Churn Pipeline - IAM, Lambda, and EventBridge
 
 Resources:
+
   SageMakerExecutionRole:
     Type: AWS::IAM::Role
     Properties:
@@ -19,9 +20,74 @@ Resources:
         - arn:aws:iam::aws:policy/CloudWatchFullAccess
         - arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess
 
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ChurnLambdaExecutionRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:aws:iam::aws:policy/CloudWatchLogsFullAccess
+
+  AutoDeployFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: churn-auto-deploy
+      Runtime: python3.11
+      Handler: handler.lambda_handler
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Timeout: 120
+      Code:
+        ZipFile: |
+          def lambda_handler(event, context):
+              return {'statusCode': 200}
+      Environment:
+        Variables:
+          ENDPOINT_NAME: churn-prediction-endpoint
+          ENDPOINT_CONFIG_NAME: churn-prediction-config
+          MODEL_PACKAGE_GROUP: ChurnModelPackageGroup
+          SAGEMAKER_ROLE_ARN: !GetAtt SageMakerExecutionRole.Arn
+
+  ModelApprovalRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Name: churn-model-approval-rule
+      Description: Triggers Lambda when a churn model is approved in Model Registry
+      EventPattern:
+        source:
+          - aws.sagemaker
+        detail-type:
+          - SageMaker Model Package State Change
+        detail:
+          ModelApprovalStatus:
+            - Approved
+          ModelPackageGroupName:
+            - ChurnModelPackageGroup
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt AutoDeployFunction.Arn
+          Id: AutoDeployTarget
+
+  LambdaInvokePermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt AutoDeployFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt ModelApprovalRule.Arn
+
 Outputs:
-  RoleArn:
-    Description: SageMaker Execution Role ARN
+  SageMakerRoleArn:
     Value: !GetAtt SageMakerExecutionRole.Arn
     Export:
       Name: SageMakerChurnExecutionRoleArn
+  LambdaFunctionArn:
+    Value: !GetAtt AutoDeployFunction.Arn
+    Export:
+      Name: ChurnAutoDeployFunctionArn
