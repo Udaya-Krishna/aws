@@ -46,7 +46,7 @@ a customer churn prediction model on AWS — with drift monitoring and automated
 | CloudWatch + Model Monitor | < $1 / month |
 | **Total (dev/demo)** | **< $5** |
 
-## What I'd Improve Next
+## Future Improvement
 
 - Add CI/CD via CodePipeline to retrigger training on new data uploads
 - Swap XGBoost for a SageMaker Autopilot run to compare baselines
