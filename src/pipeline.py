@@ -1,3 +1,4 @@
+import os
 import boto3
 import sagemaker
 from sagemaker.workflow.pipeline import Pipeline
@@ -14,7 +15,7 @@ from sagemaker import image_uris
 
 # ── Config ──────────────────────────────────────────────────────────────────
 REGION          = "ap-south-1"
-ACCOUNT_ID      = "916554063443"
+ACCOUNT_ID      = os.environ.get("AWS_ACCOUNT_ID", "YOUR_ACCOUNT_ID")
 BUCKET          = f"aws-mlops-churn-{ACCOUNT_ID}"
 ROLE_ARN        = f"arn:aws:iam::{ACCOUNT_ID}:role/SageMakerChurnExecutionRole"
 PIPELINE_NAME   = "ChurnPredictionPipeline"

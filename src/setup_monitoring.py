@@ -1,3 +1,5 @@
+import os
+
 import boto3
 
 cloudwatch = boto3.client('cloudwatch', region_name='ap-south-1')
@@ -10,7 +12,7 @@ topic_arn = topic['TopicArn']
 print(f"SNS topic: {topic_arn}")
 
 # Subscribe your email to alerts
-EMAIL = "udayakrishna24@gmail.com"  # ← replace with your email
+EMAIL = os.environ.get('ALERT_EMAIL', 'your-email@example.com')  
 sns.subscribe(
     TopicArn=topic_arn,
     Protocol='email',

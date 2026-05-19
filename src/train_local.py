@@ -6,7 +6,8 @@ import xgboost as xgb
 from sklearn.metrics import accuracy_score, roc_auc_score
 import json
 
-BUCKET = "aws-mlops-churn-916554063443"
+ACCOUNT_ID = os.environ.get("AWS_ACCOUNT_ID", "YOUR_ACCOUNT_ID")
+BUCKET = f"aws-mlops-churn-{ACCOUNT_ID}"
 REGION = "ap-south-1"
 
 print("Loading processed data...")

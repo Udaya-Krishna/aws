@@ -11,8 +11,8 @@ phases:
     commands:
       - echo "Running preprocessing..."
       - python src/preprocessing.py
-        --input-path s3://aws-mlops-churn-916554063443/raw
-        --output-path s3://aws-mlops-churn-916554063443/processed
+        --input-path s3://aws-mlops-churn-$AWS_ACCOUNT_ID/raw
+        --output-path s3://aws-mlops-churn-$AWS_ACCOUNT_ID/processed
 
   build:
     commands:
