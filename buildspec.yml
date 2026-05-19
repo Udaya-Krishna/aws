@@ -1,0 +1,30 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+      - pip install boto3 pandas scikit-learn xgboost "sagemaker==2.232.2" pytz
+
+  pre_build:
+    commands:
+      - echo "Running preprocessing..."
+      - python src/preprocessing.py
+        --input-path s3://aws-mlops-churn-916554063443/raw
+        --output-path s3://aws-mlops-churn-916554063443/processed
+
+  build:
+    commands:
+      - echo "Training model..."
+      - python src/train_local.py
+
+  post_build:
+    commands:
+      - echo "Pipeline complete. Model registered in SageMaker Model Registry."
+      - echo "Approve the model in Model Registry to trigger auto-deployment."
+
+artifacts:
+  files:
+    - data/evaluation/evaluation.json
+  discard-paths: no

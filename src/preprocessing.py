@@ -24,6 +24,7 @@ def preprocess(input_path, output_path):
     df.dropna(inplace=True)
 
     # Encode binary yes/no columns
+    # Encode binary yes/no columns
     binary_cols = [
         "Partner", "Dependents", "Phone Service", "Paperless Billing",
         "Multiple Lines", "Online Security", "Online Backup",
@@ -34,6 +35,12 @@ def preprocess(input_path, output_path):
             "Yes": 1, "No": 0,
             "No phone service": 0, "No internet service": 0
         })
+
+    # Encode Senior Citizen (already 0/1 in some versions, Yes/No in others)
+    df["Senior Citizen"] = df["Senior Citizen"].map(
+        {"Yes": 1, "No": 0, 0: 0, 1: 1}
+    ).fillna(df["Senior Citizen"])
+    df["Senior Citizen"] = df["Senior Citizen"].astype(int)
 
     # Encode gender
     df["Gender"] = df["Gender"].map({"Male": 1, "Female": 0})
