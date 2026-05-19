@@ -6,7 +6,7 @@ An end-to-end MLOps pipeline that trains, evaluates, registers, and auto-deploys
 
 ## Architecture
 
-![Architecture](docs/architecture.png)
+![Architecture](docs/mlops_churn_architecture.svg)
 
 ### Flow
 
